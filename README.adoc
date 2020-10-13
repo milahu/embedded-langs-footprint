@@ -38,6 +38,7 @@ The TinyScheme project has slowly acquired foothold in many open-source projects
 
 Homepage:: http://tinyscheme.sourceforge.net/home.html
 Documentation:: https://sourceforge.net/p/tinyscheme/code/HEAD/tree/trunk/Manual.txt
+Source code:: https://sourceforge.net/p/tinyscheme/code/HEAD/tree/
 
 .External Function Declaration
 [source,cpp,indent=0]
@@ -61,14 +62,22 @@ Despite the small size, Chibi-Scheme attempts to do The Right Thing. The default
 
 Specifically, the default REPL language contains all bindings from R7RS small, available explicitly as the (`scheme small`) library. Chibi-Scheme is known to work on 32 and 64-bit Linux, FreeBSD, NetBSD, OpenBSD and OS X, Plan 9, Windows, iOS, Android, ARM and Emscripten. Basic support for native Windows desktop also exists.
 
-Homepage:: https://github.com/ashinn/chibi-scheme/
+Homepage:: http://synthcode.com/wiki/chibi-scheme
 Documentation:: http://synthcode.com/scheme/chibi/
+Source code:: https://github.com/ashinn/chibi-scheme/
 
 .External Function Declaration
 [source,cpp,indent=0]
 ----
 include::src/chibi-scheme.cc[tag=native]
 ----
+
+Notes:
+
+ * Chibi-Scheme has the extensive library (besides support of standard Scheme libraries), few examples are:
+ ** http://synthcode.com/scheme/chibi/lib/chibi/crypto/rsa.html[(chibi crypto rsa)] - RSA public key encryption
+ ** http://synthcode.com/scheme/chibi/lib/chibi/crypto/sha2.html[(chibi crypto sha2)] - SHA-2 hash
+ ** http://synthcode.com/scheme/chibi/lib/chibi/json.html[(chibi json)] - JSON reading and writing
 
 === Squirrel
 
@@ -90,6 +99,7 @@ Squirrel is inspired by languages like Python, ECMAScript and especially Lua (th
 
 Homepage:: http://squirrel-lang.org/
 Documentation:: http://squirrel-lang.org/squirreldoc/reference/
+Source code:: https://github.com/albertodemichelis/squirrel
 
 .External Function Declaration
 [source,cpp,indent=0]
@@ -113,6 +123,7 @@ It also has a REPL with autocompletion and coloration
 
 Homepage:: https://arkscript-lang.github.io/
 Documentation:: https://arkscript-lang.github.io/documentation.html
+Source code:: https://github.com/ArkScript-lang/Ark
 
 .External Function Declaration
 [source,cpp,indent=0]
@@ -128,8 +139,9 @@ Gravity supports procedural programming, object-oriented programming, functional
 
 Gravity has been developed from scratch for the https://creolabs.com/[Creo] project in order to offer an easy way to write portable code for the iOS and Android platforms.
 
-Homepage:: https://github.com/marcobambini/gravity
+Homepage:: https://marcobambini.github.io/gravity/#/
 Documentation:: https://marcobambini.github.io/gravity/#/README
+Source code:: https://github.com/marcobambini/gravity
 
 .External Function Declaration
 [source,cpp,indent=0]
@@ -147,8 +159,9 @@ Janet is a functional and imperative programming language and bytecode interpret
 
 There is a REPL for trying out the language, as well as the ability to run script files. It runs on Windows, Linux, macOS, BSDs, and should run on other systems with some porting.
 
-Homepage:: https://github.com/janet-lang/janet
+Homepage:: https://janet-lang.org/
 Documentation:: https://janet-lang.org/docs/index.html
+Source code:: https://github.com/janet-lang/janet
 
 .External Function Declaration
 [source,cpp,indent=0]
@@ -164,10 +177,11 @@ ChaiScript is one of the only embedded scripting language designed from the grou
  - It maintains type safety between the C{pp} application and the user scripts.
  - It supports a variety of C{pp} techniques including callbacks, overloaded functions, class methods, and STL containers.
 
-The syntax resembles the ECMAScript.
+The syntax resembles ECMAScript.
 
-Homepage:: https://github.com/ChaiScript/ChaiScript
+Homepage:: http://chaiscript.com/
 Documentation:: http://chaiscript.com/docs.html
+Source code:: https://github.com/ChaiScript/ChaiScript
 
 .External Function Declaration
 [source,cpp,indent=0]
@@ -186,6 +200,7 @@ The scripting language follows the widely known syntax of C/C{pp}, but without t
 
 Homepage:: http://www.angelcode.com/angelscript/
 Documentation:: http://www.angelcode.com/angelscript/sdk/docs/manual/
+Source code:: https://sourceforge.net/p/angelscript/code/HEAD/tree/trunk/
 
 .External Function Declaration
 [source,cpp,indent=0]
