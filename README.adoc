@@ -1,0 +1,198 @@
+= Embedded Languages Footprint
+:toc:
+:source-highlighter: rouge
+
+The sandbox project to investigate a footprint of various embedded languages.
+
+The criteria for the language to be included into the project:
+
+* C/C{pp} only (to ensure the best portability);
+* No extra compilation dependencies (to build with the bare devkits);
+* Actively maintained (to compile without its source code changes);
+* Strong typing (to reduce the number of possible errors);
+* No whitespace dependencies in scripts (to allow their minification);
+* Permissive license for both open source and commercial projects.
+
+== Results
+
+Sorted by the footprint (disk) size. The example code is the declaration
+of the function that concatenates the fixed string ("Hello, ") with the output
+of the external function ("read" that should return "world").
+All code is verified to be properly returing "Hello, world"
+as the result of invoking that function.
+
+|===
+|Language |Size (in bytes)| Example code
+include::results.adoc[]
+|===
+
+== Languages
+
+Each language contains the section how to declare external function used
+by the script (C{pp} lambda returning string "world").
+
+=== TinyScheme
+
+TinyScheme is a lightweight Scheme interpreter that implements as large a subset of R5RS as was possible without getting very large and complicated.
+The TinyScheme project has slowly acquired foothold in many open-source projects over the years, notably http://www.gimp.org/docs/script-fu-update.html[GIMP].
+
+Homepage:: http://tinyscheme.sourceforge.net/home.html
+Documentation:: https://sourceforge.net/p/tinyscheme/code/HEAD/tree/trunk/Manual.txt
+
+.External Function Declaration
+[source,cpp,indent=0]
+----
+include::src/tinyscheme.cc[tag=native]
+----
+
+Notes:
+
+ - The project includes a REPL interpreter.
+
+=== Chibi-Scheme
+
+Chibi-Scheme is a very small library intended for use as an extension and scripting language in C programs. In addition to support for lightweight VM-based threads, each VM itself runs in an isolated heap allowing multiple VMs to run simultaneously in different OS threads.
+Despite the small size, Chibi-Scheme attempts to do The Right Thing. The default settings include:
+
+ * a full numeric tower, with rational and complex numbers
+ * full and seemless Unicode support
+ * low-level and high-level hygienic macros
+ * an extensible module system
+
+Specifically, the default REPL language contains all bindings from R7RS small, available explicitly as the (`scheme small`) library. Chibi-Scheme is known to work on 32 and 64-bit Linux, FreeBSD, NetBSD, OpenBSD and OS X, Plan 9, Windows, iOS, Android, ARM and Emscripten. Basic support for native Windows desktop also exists.
+
+Homepage:: https://github.com/ashinn/chibi-scheme/
+Documentation:: http://synthcode.com/scheme/chibi/
+
+.External Function Declaration
+[source,cpp,indent=0]
+----
+include::src/chibi-scheme.cc[tag=native]
+----
+
+=== Squirrel
+
+Squirrel is a high level imperative, object-oriented programming language, designed to be a light-weight scripting language offering a wide range of features like:
+
+ * dynamic typing
+ * delegation
+ * classes & inheritance
+ * higher order functions
+ * lexical scoping
+ * generators
+ * cooperative threads (coroutines)
+ * tail recursion
+ * exception handling
+ * automatic memory management
+ * optional 16bits characters strings
+
+Squirrel is inspired by languages like Python, ECMAScript and especially Lua (the API is very similar and the table code is based on the Lua one).
+
+Homepage:: http://squirrel-lang.org/
+Documentation:: http://squirrel-lang.org/squirreldoc/reference/
+
+.External Function Declaration
+[source,cpp,indent=0]
+----
+include::src/squirrel.cc[tag=native]
+----
+
+Notes:
+
+ - The project includes a REPL interpreter.
+
+=== ArkScript
+
+Arkscript is:
+
+ *  a functional language: every parameter is passed by value, everything is immutable unless you use mut to define a mutable variable
+ *  powerful: it can handle object oriented programming in a very elegant way with its closures and explicit captures
+ * a Lisp-like, but with less parentheses: `[...]` is expanded to `(list ...)` and `{}` to `(begin ...)`.
+
+It also has a REPL with autocompletion and coloration
+
+Homepage:: https://arkscript-lang.github.io/
+Documentation:: https://arkscript-lang.github.io/documentation.html
+
+.External Function Declaration
+[source,cpp,indent=0]
+----
+include::src/arkscript.cc[tag=native]
+----
+
+=== Gravity
+
+Gravity is a powerful, dynamically typed, lightweight, embeddable programming language written in C without any external dependencies (except for stdlib). It is a class-based concurrent scripting language with modern Swift-like syntax.
+
+Gravity supports procedural programming, object-oriented programming, functional programming and data-driven programming. Thanks to special built-in methods, it can also be used as a prototype-based programming language.
+
+Gravity has been developed from scratch for the https://creolabs.com/[Creo] project in order to offer an easy way to write portable code for the iOS and Android platforms.
+
+Homepage:: https://github.com/marcobambini/gravity
+Documentation:: https://marcobambini.github.io/gravity/#/README
+
+.External Function Declaration
+[source,cpp,indent=0]
+----
+include::src/gravity.cc[tag=native]
+----
+
+Notes:
+
+ - The project doesn't includes a REPL interpreter, but has a compiler allowing to compile and run its scripts.
+
+=== Janet
+
+Janet is a functional and imperative programming language and bytecode interpreter. It is a lisp-like language, but lists are replaced by other data structures (arrays, tables (hash table), struct (immutable hash table), tuples). The language also supports bridging to native code written in C, meta-programming with macros, and bytecode assembly.
+
+There is a REPL for trying out the language, as well as the ability to run script files. It runs on Windows, Linux, macOS, BSDs, and should run on other systems with some porting.
+
+Homepage:: https://github.com/janet-lang/janet
+Documentation:: https://janet-lang.org/docs/index.html
+
+.External Function Declaration
+[source,cpp,indent=0]
+----
+include::src/janet.cc[tag=native]
+----
+
+=== ChaiScript
+
+ChaiScript is one of the only embedded scripting language designed from the ground up to directly target C{pp} and take advantage of modern C{pp} development techniques, working with the developer how they would expect it to work. Being a native C{pp} application, it has some advantages over existing embedded scripting languages:
+
+ - It uses a header-only approach, which makes it easy to integrate with existing projects.
+ - It maintains type safety between the C{pp} application and the user scripts.
+ - It supports a variety of C{pp} techniques including callbacks, overloaded functions, class methods, and STL containers.
+
+The syntax resembles the ECMAScript.
+
+Homepage:: https://github.com/ChaiScript/ChaiScript
+Documentation:: http://chaiscript.com/docs.html
+
+.External Function Declaration
+[source,cpp,indent=0]
+----
+include::src/chaiscript.cc[tag=native]
+----
+
+Notes:
+
+ - The project includes a REPL interpreter.
+ - The compilation time is quite noticeable.
+
+=== AngelScript
+
+The scripting language follows the widely known syntax of C/C{pp}, but without the need to worry about pointers and memory leaks. Contrary to most scripting languages, AngelScript uses the common C/C{pp} datatypes for more efficient communication with the host application.
+
+Homepage:: http://www.angelcode.com/angelscript/
+Documentation:: http://www.angelcode.com/angelscript/sdk/docs/manual/
+
+.External Function Declaration
+[source,cpp,indent=0]
+----
+include::src/angelscript.cc[tag=native]
+----
+
+Notes:
+
+ - The project doesn't includes a REPL interpreter.

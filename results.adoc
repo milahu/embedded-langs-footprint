@@ -1,0 +1,32 @@
+
+| TinyScheme
+| 86824
+| `(define fn(lambda () (string-append "Hello, " (read))))`
+
+| Chibi-Scheme
+| 261480
+| `(define fn(lambda () (string-append "Hello, " (read))))`
+
+| Squirrel
+| 277008
+| `function fn() { return "Hello, " + read(); }`
+
+| ArkScript
+| 449792
+| `(let fn(fun() (+ "Hello, " (read))))`
+
+| Gravity
+| 507896
+| `extern var read; func fn() { return "Hello, " + read(); }`
+
+| Janet
+| 537560
+| `(defn fn[] (string "Hello, " (read)))`
+
+| ChaiScript
+| 1374976
+| `def fn() { return "Hello, " + read(); }`
+
+| AngelScript
+| 1923960
+| `string fn() { return 'Hello, ' + read(); }`
