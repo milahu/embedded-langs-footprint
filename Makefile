@@ -6,6 +6,7 @@ CXXFLAGS := -Os -s -std=c++17
 
 executables := \
 	target/tinyscheme \
+	target/lua \
 	target/chibi-scheme \
 	target/squirrel \
 	target/arkscript \
@@ -141,6 +142,18 @@ target/tinyscheme: src/tinyscheme.cc $(tinyscheme-lib)
 	$(CXX) $(CXXFLAGS) $^ -o $@ \
 		-I$(tinyscheme-code) \
 		-DSTANDALONE=0 -ldl
+
+lua-code := target/lua-code
+$(lua-code): | target
+	$(GIT_CLONE) "https://github.com/lua/lua" $@
+
+lua-lib := $(lua-code)/liblua.a
+$(lua-lib): $(lua-code)
+	$(MAKE) -C $(lua-code) a
+
+target/lua: src/lua.cc $(lua-lib)
+	$(CXX) $(CXXFLAGS) $^ -o $@ \
+		-I$(lua-code) -ldl
 
 target:
 	mkdir -p target

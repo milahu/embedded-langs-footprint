@@ -3,6 +3,10 @@
 | 86824
 | `(define fn(lambda () (string-append "Hello, " (read))))`
 
+| Lua
+| 252880
+| `function fn() return "Hello, " .. read() end`
+
 | Chibi-Scheme
 | 261480
 | `(define fn(lambda () (string-append "Hello, " (read))))`

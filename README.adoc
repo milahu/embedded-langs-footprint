@@ -1,6 +1,7 @@
 = Embedded Languages Footprint
 :toc:
 :source-highlighter: rouge
+:icons: font
 
 The sandbox project to investigate a footprint of various embedded languages.
 
@@ -10,8 +11,10 @@ The criteria for the language to be included into the project:
 * No extra compilation dependencies (to build with the bare devkits);
 * Actively maintained (to compile without its source code changes);
 * Strong typing (to reduce the number of possible errors);
-* No whitespace dependencies in scripts (to allow their minification);
+* No newline sensitivity in scripts (to allow their minification);
 * Permissive license for both open source and commercial projects.
+
+NOTE: Lua doesn't satisfy the requirement to be newline-insensitive and included to the project for the reference only.
 
 == Results
 
@@ -44,6 +47,24 @@ Source code:: https://sourceforge.net/p/tinyscheme/code/HEAD/tree/
 [source,cpp,indent=0]
 ----
 include::src/tinyscheme.cc[tag=native]
+----
+
+Notes:
+
+ - The project includes a REPL interpreter.
+
+=== Lua
+
+Lua is a powerful, efficient, lightweight, embeddable scripting language. It supports procedural programming, object-oriented programming, functional programming, data-driven programming, and data description. 
+
+Homepage:: http://www.lua.org/
+Documentation:: http://www.lua.org/docs.html
+Source code:: http://www.lua.org/source/
+
+.External Function Declaration
+[source,cpp,indent=0]
+----
+include::src/lua.cc[tag=native]
 ----
 
 Notes:
