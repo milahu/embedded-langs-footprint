@@ -11,10 +11,8 @@ The criteria for the language to be included into the project:
 * No extra compilation dependencies (to build with the bare devkits);
 * Actively maintained (to compile without its source code changes);
 * Strong typing (to reduce the number of possible errors);
-* No newline sensitivity in scripts (to allow their minification);
 * Permissive license for both open source and commercial projects.
-
-NOTE: Lua doesn't satisfy the requirement to be newline-insensitive and included to the project for the reference only.
+* Preferably no newline sensitivity in scripts (to allow their minification);
 
 == Results
 
@@ -70,6 +68,7 @@ include::src/lua.cc[tag=native]
 Notes:
 
  - The project includes a REPL interpreter.
+ - New-lines sensitive (however they could be replaced by spaced).
 
 === Chibi-Scheme
 
@@ -232,3 +231,23 @@ include::src/angelscript.cc[tag=native]
 Notes:
 
  - The project doesn't includes a REPL interpreter.
+
+=== Python
+
+Python is an interpreted, high-level and general-purpose programming language.
+
+Homepage:: https://www.python.org/
+Documentation:: https://docs.python.org/
+Source code:: https://github.com/python/cpython
+
+.External Function Declaration
+[source,cpp,indent=0]
+----
+include::src/python.cc[tag=native]
+----
+
+Notes:
+
+ - Indentation and new lines sensitive.
+ - The test application couldn't work without a subset of the Python standard library.
+ It's embedded as a zip file into the executable, however it's not a portable solution.

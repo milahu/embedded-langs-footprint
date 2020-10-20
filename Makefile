@@ -2,7 +2,7 @@ SVN := svn co -q
 GIT_CLONE := git clone -q --depth 1
 CXXFLAGS := -Os -s -std=c++17
 # For debugging:
-#CXXFLAGS := -O0 -g -std=c++17
+# CXXFLAGS := -O0 -g -std=c++17
 
 executables := \
 	target/tinyscheme \
@@ -13,7 +13,8 @@ executables := \
 	target/gravity \
 	target/janet \
 	target/chaiscript \
-	target/angelscript
+	target/angelscript \
+	target/python
 
 results := results.adoc
 
@@ -154,6 +155,46 @@ $(lua-lib): $(lua-code)
 target/lua: src/lua.cc $(lua-lib)
 	$(CXX) $(CXXFLAGS) $^ -o $@ \
 		-I$(lua-code) -ldl
+
+python-code := target/python-code
+$(python-code): | target
+	$(GIT_CLONE) "https://github.com/python/cpython.git" $@
+
+python-lib := $(python-code)/libpython.a
+$(python-lib): | $(python-code)
+	cd $(python-code) && \
+	./configure && \
+	$(MAKE) -j VERSION="" libpython.a
+
+python-std := target/python-std.zip
+python-std-path := $(PWD)/$(python-std)
+
+python-std-modules := _collections_abc.py \
+_sitebuiltins.py \
+abc.py \
+codecs.py \
+genericpath.py \
+io.py \
+os.py \
+posixpath.py \
+site.py \
+stat.py \
+encodings/aliases.py \
+encodings/__init__.py \
+encodings/utf_8.py
+
+$(python-std): | $(python-code)
+	cd $(python-code)/Lib && \
+	zip $(python-std-path) $(python-std-modules)
+
+python-std-elf := target/python-std.o
+$(python-std-elf): $(python-std)
+	$(LD) -r -b binary -o $@ $^
+
+target/python: src/python.cc $(python-lib) $(python-std-elf)
+	$(CXX) $(CXXFLAGS) $^ -o $@ \
+		-I$(python-code) -I$(python-code)/Include \
+		-ldl -pthread -lutil -fPIC
 
 target:
 	mkdir -p target

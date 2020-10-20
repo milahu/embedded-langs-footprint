@@ -34,3 +34,7 @@
 | AngelScript
 | 1923960
 | `string fn() { return 'Hello, ' + read(); }`
+
+| Python
+| 3615376
+| `import usermod; fn = lambda: 'Hello, ' + usermod.read()`
