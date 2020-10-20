@@ -3,6 +3,8 @@
 :source-highlighter: rouge
 :icons: font
 
+== Overview
+
 The sandbox project to investigate a footprint of various embedded languages.
 
 The criteria for the language to be included into the project:
@@ -11,8 +13,23 @@ The criteria for the language to be included into the project:
 * No extra compilation dependencies (to build with the bare devkits);
 * Actively maintained (to compile without its source code changes);
 * Strong typing (to reduce the number of possible errors);
-* Permissive license for both open source and commercial projects.
-* Preferably no newline sensitivity in scripts (to allow their minification);
+* Permissive license for both open source and commercial projects;
+
+=== Code Transformation Requirements
+
+The syntax of the language should be friendly to the required source code transformations.
+The original list of the languages satisfied those requirements, but it has been
+extended later to include other languages for the reference or testing purposes.
+
+NOTE: While it's possible to transform the bytecode (where available) instead of the
+original source code (thus lifting the requirement for its syntax), it could be not
+an easy feat, esp. if the bytecode format is proprietary or could change any time.
+
+Examples of possible source code transformations:
+
+* Stripping debug and unused functionality;
+* Minification of private symbols;
+* Removing all newlines.
 
 == Results
 
@@ -21,6 +38,8 @@ of the function that concatenates the fixed string ("Hello, ") with the output
 of the external function ("read" that should return "world").
 All code is verified to be properly returing "Hello, world"
 as the result of invoking that function.
+
+Platform:: Linux amber 5.9.1-arch1-1 #1 SMP PREEMPT Sat, 17 Oct 2020 13:30:37 +0000 x86_64 GNU/Linux
 
 |===
 |Language |Size (in bytes)| Example code
