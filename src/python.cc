@@ -1,5 +1,8 @@
+#include "mem.hh"
+
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
+
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -29,9 +32,11 @@ int main(int argc, char *argv[]) {
   ss << "unzip -o -q " << filename << " -d " << tmp;
   system(ss.str().c_str());
 
+  static size_t rss;
   // tag::native[]
   PyMethodDef user_methods[] = {
     {"read", [](PyObject *self, PyObject *args) -> PyObject * {
+      rss = read_rss();
       return Py_BuildValue("s", "world");
     }, METH_VARARGS, nullptr},
     {nullptr, nullptr, 0, nullptr} /* Sentinel */
@@ -73,7 +78,8 @@ int main(int argc, char *argv[]) {
   Py_DECREF(pstr);
 
   cout << "| Python" << endl;
-  cout << "| " << filesystem::file_size(argv[0]) << endl;
+  cout << "| " << filesystem::file_size(argv[0]) / 1024 << endl;
+  cout << "| " << rss << endl;
   cout << "| `" << src << "`" << endl;
 
   if (Py_FinalizeEx() < 0) {

@@ -1,3 +1,4 @@
+#include "mem.hh"
 #include <cassert>
 #include <filesystem>
 #include <iostream>
@@ -40,10 +41,12 @@ int main(int argc, char* argv[]) {
   sq_setprintfunc(*v, printfunc, errorfunc);
   sqstd_seterrorhandlers(*v);
 
+  static size_t rss;
   // tag::native[]
   sq_pushroottable(*v);
   sq_pushstring(*v, _SC("read"), -1);
   sq_newclosure(*v, [](HSQUIRRELVM v) -> SQInteger {
+    rss = read_rss();
     sq_pushstring(v, _SC("world"), -1);
     return 1;
   }, 0);
@@ -88,7 +91,8 @@ int main(int argc, char* argv[]) {
   }
 
   cout << "| Squirrel" << endl;
-  cout << "| " << filesystem::file_size(argv[0]) << endl;
+  cout << "| " << filesystem::file_size(argv[0]) / 1024 << endl;
+  cout << "| " << rss << endl;
   cout << "| `" << buffer << "`" << endl;
 
   return EXIT_SUCCESS;

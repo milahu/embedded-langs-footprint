@@ -1,3 +1,4 @@
+#include "mem.hh"
 #include <cassert>
 #include <chibi/eval.h>
 #include <filesystem>
@@ -29,9 +30,11 @@ int main(int argc, char* argv[]) {
   sexp res = sexp_eval_string(*ctx, init, -1, nullptr);
   check(*ctx, res);
 
+  static size_t rss;
   // tag::native[]
   res = sexp_define_foreign(*ctx, sexp_context_env(*ctx), "read", 0,
                             [](sexp ctx, sexp self, sexp_sint_t n) -> sexp {
+                              rss = read_rss();
                               return sexp_c_string(ctx, "world", -1);
                             });
   // end::native[]
@@ -53,7 +56,8 @@ int main(int argc, char* argv[]) {
   }
 
   cout << "| Chibi-Scheme" << endl;
-  cout << "| " << filesystem::file_size(argv[0]) << endl;
+  cout << "| " << filesystem::file_size(argv[0]) / 1024 << endl;
+  cout << "| " << rss << endl;
   cout << "| `" << src << "`" << endl;
 
   return EXIT_SUCCESS;

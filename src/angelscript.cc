@@ -1,4 +1,5 @@
 #include "angelscript.h"
+#include "mem.hh"
 #include <cassert>
 #include <filesystem>
 #include <iostream>
@@ -31,9 +32,11 @@ int main(int argc, char* argv[]) {
 
   RegisterStdString(engine.get());
 
+  static size_t rss;
   // tag::native[]
   r = engine->RegisterGlobalFunction("string read()",
                                      asFUNCTION(*[]() -> string {
+                                       rss = read_rss();
                                        return "world";
                                      }),
                                      asCALL_CDECL);
@@ -75,7 +78,8 @@ int main(int argc, char* argv[]) {
   }
 
   cout << "| AngelScript" << endl;
-  cout << "| " << filesystem::file_size(argv[0]) << endl;
+  cout << "| " << filesystem::file_size(argv[0]) / 1024 << endl;
+  cout << "| " << rss << endl;
   cout << "| `" << src << "`" << endl;
 
   return EXIT_SUCCESS;

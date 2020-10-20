@@ -36,13 +36,14 @@ Examples of possible source code transformations:
 Sorted by the footprint (disk) size. The example code is the declaration
 of the function that concatenates the fixed string ("Hello, ") with the output
 of the external function ("read" that should return "world").
+
 All code is verified to be properly returing "Hello, world"
-as the result of invoking that function.
+as the result of invoking that function. Resident set size (RSS) is measured during execution of "read" function.
 
 Platform:: Linux amber 5.9.1-arch1-1 #1 SMP PREEMPT Sat, 17 Oct 2020 13:30:37 +0000 x86_64 GNU/Linux
 
 |===
-|Language |Size (in bytes)| Example code
+| Language | ELF Size (KiB) | RSS (KiB) | Example Code
 include::results.adoc[]
 |===
 

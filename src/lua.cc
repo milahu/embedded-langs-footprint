@@ -1,3 +1,4 @@
+#include "mem.hh"
 #include <cassert>
 #include <filesystem>
 #include <iostream>
@@ -22,8 +23,10 @@ int main(int argc, char* argv[]) {
 
   luaL_openlibs(L.get());
 
+  static size_t rss;
   // tag::native[]
   lua_pushcfunction(L.get(), [](lua_State *l) -> int {
+    rss = read_rss();
     lua_pushstring(l, "world");
     return 1;
   });
@@ -49,7 +52,8 @@ int main(int argc, char* argv[]) {
   }
 
   cout << "| Lua" << endl;
-  cout << "| " << filesystem::file_size(argv[0]) << endl;
+  cout << "| " << filesystem::file_size(argv[0]) / 1024 << endl;
+  cout << "| " << rss << endl;
   cout << "| `" << src << "`" << endl;
 
   return EXIT_SUCCESS;

@@ -3,6 +3,7 @@
 #include "gravity_macros.h"
 #include "gravity_vm.h"
 #include "gravity_vmmacros.h"
+#include "mem.hh"
 #include <cassert>
 #include <filesystem>
 #include <iostream>
@@ -45,7 +46,7 @@ void compile(gravity_vm *vm, gravity_delegate_t delegate, const char *src) {
   gravity_vm_loadclosure(vm, closure);
 }
 
-void run(const char *src) {
+size_t run(const char *src) {
   gravity_delegate_t delegate = {.error_callback = report_error};
 
   shared_ptr<gravity_vm> vm(gravity_vm_new(&delegate),
@@ -53,11 +54,13 @@ void run(const char *src) {
                               gravity_vm_free(v);
                             });
 
+  static size_t rss;
   // tag::native[]
   gravity_vm_setvalue(vm.get(), "read", NEW_CLOSURE_VALUE([](gravity_vm *vm,
                                                        gravity_value_t *args,
                                                        uint16_t nargs,
                                                        uint32_t rindex) {
+    rss = read_rss();
     RETURN_VALUE(VALUE_FROM_CSTRING(vm, "world"), rindex);
   }));
   // end::native[]
@@ -78,16 +81,19 @@ void run(const char *src) {
     cerr << "Couldn't run 'fn'." << endl;
     exit(EXIT_FAILURE);
   }
+
+  return rss;
 }
 
 int main(int argc, char* argv[]) {
   shared_ptr<void> core(nullptr, [](void*) { gravity_core_free(); });
 
   auto src = "extern var read; func fn() { return \"Hello, \" + read(); }";
-  run(src);
+  auto rss = run(src);
 
   cout << "| Gravity" << endl;
-  cout << "| " << filesystem::file_size(argv[0]) << endl;
+  cout << "| " << filesystem::file_size(argv[0]) / 1024 << endl;
+  cout << "| " << rss << endl;
   cout << "| `" << src << "`" << endl;
 
   return EXIT_SUCCESS;

@@ -1,3 +1,4 @@
+#include "mem.hh"
 #include <cassert>
 #include <filesystem>
 #include <iostream>
@@ -15,9 +16,11 @@ int main(int argc, const char *argv[]) {
 
   auto env = janet_core_env(nullptr);
 
+  static size_t rss;
   // tag::native[]
   static const JanetReg cfuns[] = {{
       "read", [](int32_t argc, Janet *argv) -> Janet {
+        rss = read_rss();
         return janet_cstringv("world");
       }, nullptr }};
   janet_cfuns(env, nullptr, cfuns);
@@ -50,7 +53,8 @@ int main(int argc, const char *argv[]) {
   assert(!value.compare("Hello, world"));
 
   cout << "| Janet" << endl;
-  cout << "| " << filesystem::file_size(argv[0]) << endl;
+  cout << "| " << filesystem::file_size(argv[0]) / 1024 << endl;
+  cout << "| " << rss << endl;
   cout << "| `" << src << "`" << endl;
 
   return EXIT_SUCCESS;

@@ -1,3 +1,4 @@
+#include "mem.hh"
 #include "scheme.h"
 #include <cassert>
 #include <filesystem>
@@ -15,10 +16,12 @@ int main(int argc, char* argv[]) {
                                 buf,
                                 buf + sizeof(buf)/sizeof(char) - 1);
 
+  static size_t rss;
   // tag::native[]
   scheme_registerable list[] = {
     {
       .f = [](scheme *sc, pointer args) -> pointer {
+        rss = read_rss();
         return mk_string(sc, "world");
       },
       .name = "read"
@@ -34,7 +37,8 @@ int main(int argc, char* argv[]) {
   assert(!value.compare("Hello, world"));
 
   cout << "| TinyScheme" << endl;
-  cout << "| " << filesystem::file_size(argv[0]) << endl;
+  cout << "| " << filesystem::file_size(argv[0]) / 1024 << endl;
+  cout << "| " << rss << endl;
   cout << "| `" << src << "`" << endl;
 
   return EXIT_SUCCESS;
