@@ -3,7 +3,7 @@
 #include "gravity_macros.h"
 #include "gravity_vm.h"
 #include "gravity_vmmacros.h"
-#include "mem.hh"
+#include "proc.hh"
 #include <cassert>
 #include <filesystem>
 #include <iostream>
@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
   auto rss = run(src);
 
   cout << "| Gravity" << endl;
-  cout << "| " << filesystem::file_size(argv[0]) / 1024 << endl;
+  cout << "| " << read_size(argv[0]) << endl;
   cout << "| " << rss << endl;
   cout << "| `" << src << "`" << endl;
 

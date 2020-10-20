@@ -260,7 +260,7 @@ Homepage:: https://www.python.org/
 Documentation:: https://docs.python.org/
 Source code:: https://github.com/python/cpython
 
-.External Function Declaration
+.External Function Declaration (C/C++)
 [source,cpp,indent=0]
 ----
 include::src/python.cc[tag=native]
@@ -271,3 +271,20 @@ Notes:
  - Indentation and new lines sensitive.
  - The test application couldn't work without a subset of the Python standard library.
  It's embedded as a zip file into the executable, however it's not a portable solution.
+
+==== Using Cython
+
+Using Cython simplifies the embedding as the declaration is in Cython file
+(with all Python features available) and C/C++ side require only registering the module.
+
+.Declare external functions in `.pyx`-files:
+[source,cython,indent=0]
+----
+include::src/cython_main.pyx[tag=declaration]
+----
+
+.Register Cython module
+[source,cpp,indent=0]
+----
+include::src/python.cc[tag=cython]
+----

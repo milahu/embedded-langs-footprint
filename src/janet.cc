@@ -1,8 +1,8 @@
-#include "mem.hh"
+#include "proc.hh"
 #include <cassert>
-#include <filesystem>
 #include <iostream>
 #include <janet.h>
+#include <memory>
 
 using namespace std;
 
@@ -53,7 +53,7 @@ int main(int argc, const char *argv[]) {
   assert(!value.compare("Hello, world"));
 
   cout << "| Janet" << endl;
-  cout << "| " << filesystem::file_size(argv[0]) / 1024 << endl;
+  cout << "| " << read_size(argv[0]) << endl;
   cout << "| " << rss << endl;
   cout << "| `" << src << "`" << endl;
 

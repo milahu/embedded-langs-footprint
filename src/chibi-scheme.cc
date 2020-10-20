@@ -1,7 +1,6 @@
-#include "mem.hh"
+#include "proc.hh"
 #include <cassert>
 #include <chibi/eval.h>
-#include <filesystem>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -56,7 +55,7 @@ int main(int argc, char* argv[]) {
   }
 
   cout << "| Chibi-Scheme" << endl;
-  cout << "| " << filesystem::file_size(argv[0]) / 1024 << endl;
+  cout << "| " << read_size(argv[0]) << endl;
   cout << "| " << rss << endl;
   cout << "| `" << src << "`" << endl;
 

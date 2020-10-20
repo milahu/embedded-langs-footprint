@@ -1,7 +1,7 @@
-#include "mem.hh"
+#include "proc.hh"
 #include <cassert>
-#include <filesystem>
 #include <iostream>
+#include <memory>
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
   }
 
   cout << "| Squirrel" << endl;
-  cout << "| " << filesystem::file_size(argv[0]) / 1024 << endl;
+  cout << "| " << read_size(argv[0]) << endl;
   cout << "| " << rss << endl;
   cout << "| `" << buffer << "`" << endl;
 

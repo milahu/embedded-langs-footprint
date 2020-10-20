@@ -1,7 +1,6 @@
 #include "angelscript.h"
-#include "mem.hh"
+#include "proc.hh"
 #include <cassert>
-#include <filesystem>
 #include <iostream>
 #include <memory>
 #include <scriptstdstring/scriptstdstring.h>
@@ -78,7 +77,7 @@ int main(int argc, char* argv[]) {
   }
 
   cout << "| AngelScript" << endl;
-  cout << "| " << filesystem::file_size(argv[0]) / 1024 << endl;
+  cout << "| " << read_size(argv[0]) << endl;
   cout << "| " << rss << endl;
   cout << "| `" << src << "`" << endl;
 

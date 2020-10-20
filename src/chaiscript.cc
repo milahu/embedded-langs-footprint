@@ -1,6 +1,5 @@
-#include "mem.hh"
+#include "proc.hh"
 #include <chaiscript/chaiscript.hpp>
-#include <filesystem>
 #include <iostream>
 #include <string>
 
@@ -23,7 +22,7 @@ int main(int argc, char* argv[]) {
   assert(!value.compare("Hello, world"));
 
   cout << "| ChaiScript" << endl;
-  cout << "| " << filesystem::file_size(argv[0]) / 1024 << endl;
+  cout << "| " << read_size(argv[0]) << endl;
   cout << "| " << rss << endl;
   cout << "| `" << src << "`" << endl;
 

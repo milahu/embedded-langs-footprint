@@ -38,7 +38,7 @@ angelscript-lib :=$(angelscript-code)/sdk/angelscript/lib/libangelscript.a
 $(angelscript-lib): $(angelscript-code)
 	$(MAKE) -C $(angelscript-code)/sdk/angelscript/projects/gnuc static
 
-target/angelscript: src/angelscript.cc src/mem.cc $(angelscript-lib)
+target/angelscript: src/angelscript.cc src/proc.cc $(angelscript-lib)
 	$(CXX) $(CXXFLAGS) $^ -o $@ \
 		$(angelscript-code)/sdk/add_on/scriptarray/*.cpp \
 		$(angelscript-code)/sdk/add_on/scriptstdstring/*.cpp \
@@ -50,7 +50,7 @@ chaiscript-code := target/chaiscript-code
 $(chaiscript-code): | target
 	$(GIT_CLONE) "https://github.com/ChaiScript/ChaiScript" $@
 
-target/chaiscript: src/chaiscript.cc src/mem.cc | $(chaiscript-code)
+target/chaiscript: src/chaiscript.cc src/proc.cc | $(chaiscript-code)
 	$(CXX) $(CXXFLAGS) $^ -o $@ \
 		-I$(chaiscript-code)/include \
 		-pthread -ldl
@@ -68,7 +68,7 @@ $(arkscript-lib): $(arkscript-code)
 	cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Release && \
 	cmake --build build
 
-target/arkscript: src/arkscript.cc src/mem.cc $(arkscript-lib)
+target/arkscript: src/arkscript.cc src/proc.cc $(arkscript-lib)
 	$(CXX) $(CXXFLAGS) $^ -o $@ \
 		-I$(arkscript-code)/include \
 		-I$(arkscript-code)/submodules/String/include \
@@ -83,7 +83,7 @@ chibi-scheme-lib := $(chibi-scheme-code)/libchibi-scheme.a
 $(chibi-scheme-lib): $(chibi-scheme-code)
 	$(MAKE) -C $(chibi-scheme-code) libchibi-scheme.a
 
-target/chibi-scheme: src/chibi-scheme.cc src/mem.cc $(chibi-scheme-lib)
+target/chibi-scheme: src/chibi-scheme.cc src/proc.cc $(chibi-scheme-lib)
 	$(CXX) $(CXXFLAGS) $^ -o $@ \
 		-I$(chibi-scheme-code)/include \
 		-ldl
@@ -98,7 +98,7 @@ $(gravity-lib): $(gravity-code)
 	cmake . && \
 	$(MAKE)
 
-target/gravity: src/gravity.cc src/mem.cc $(gravity-lib)
+target/gravity: src/gravity.cc src/proc.cc $(gravity-lib)
 	$(CXX) $(CXXFLAGS) $^ -o $@ \
 		-I$(gravity-code)/src/shared \
 		-I$(gravity-code)/src/utils \
@@ -113,7 +113,7 @@ janet-lib := $(janet-code)/build/libjanet.a
 $(janet-lib): $(janet-code)
 	$(MAKE) -C $(janet-code)
 
-target/janet: src/janet.cc src/mem.cc $(janet-lib)
+target/janet: src/janet.cc src/proc.cc $(janet-lib)
 	$(CXX) $(CXXFLAGS) $^ -o $@ \
 		-I$(janet-code)/build \
 		-ldl -pthread
@@ -126,7 +126,7 @@ squirrel-lib := $(squirrel-code)/lib/libsquirrel.a
 $(squirrel-lib): $(squirrel-code)
 	$(MAKE) -C $(squirrel-code)
 
-target/squirrel: src/squirrel.cc src/mem.cc $(squirrel-lib) $(squirrel-code)/lib/libsqstdlib.a
+target/squirrel: src/squirrel.cc src/proc.cc $(squirrel-lib) $(squirrel-code)/lib/libsqstdlib.a
 	$(CXX) $(CXXFLAGS) $^ -o $@ \
 		-I$(squirrel-code)/include
 
@@ -139,7 +139,7 @@ $(tinyscheme-lib): $(tinyscheme-code)
 	DL_FLAGS=-DSTANDALONE=0 \
 	$(MAKE) -C $(tinyscheme-code) libtinyscheme.a
 
-target/tinyscheme: src/tinyscheme.cc src/mem.cc $(tinyscheme-lib)
+target/tinyscheme: src/tinyscheme.cc src/proc.cc $(tinyscheme-lib)
 	$(CXX) $(CXXFLAGS) $^ -o $@ \
 		-I$(tinyscheme-code) \
 		-DSTANDALONE=0 -ldl
@@ -152,7 +152,7 @@ lua-lib := $(lua-code)/liblua.a
 $(lua-lib): $(lua-code)
 	$(MAKE) -C $(lua-code) a
 
-target/lua: src/lua.cc src/mem.cc $(lua-lib)
+target/lua: src/lua.cc src/proc.cc $(lua-lib)
 	$(CXX) $(CXXFLAGS) $^ -o $@ \
 		-I$(lua-code) -ldl
 
@@ -191,9 +191,13 @@ python-std-elf := target/python-std.o
 $(python-std-elf): $(python-std)
 	$(LD) -r -b binary -o $@ $^
 
-target/python: src/python.cc src/mem.cc $(python-lib) $(python-std-elf)
+cython-main := target/cython_main.c
+$(cython-main): src/cython_main.pyx
+	cython -3 $^ -o $@
+
+target/python: src/python.cc src/proc.cc $(cython-main) $(python-lib) $(python-std-elf)
 	$(CXX) $(CXXFLAGS) $^ -o $@ \
-		-I$(python-code) -I$(python-code)/Include \
+		-I$(python-code) -I$(python-code)/Include -Isrc -Itarget \
 		-ldl -pthread -lutil -fPIC
 
 target:

@@ -1,37 +1,39 @@
-#include "mem.hh"
+#include "proc.hh"
+#include <iostream>
+#include <memory>
 
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-
-extern unsigned char _binary_target_python_std_zip_start;
-extern unsigned char _binary_target_python_std_zip_size;
+#include "cython_main.h"
 
 using namespace std;
 
+void verify(const char *src, const char *fn_call) {
+  if (PyRun_SimpleString(src)) {
+    cerr << "Could define '" << fn_call << "'" << endl;
+    exit(EXIT_FAILURE);
+  }
+
+  PyObject* main = PyImport_AddModule("__main__");
+  PyObject* globals = PyModule_GetDict(main);
+  PyObject* locals = PyDict_New();
+  PyObject *pstr  = PyRun_String(fn_call, Py_eval_input, globals, locals);
+  if (!pstr) {
+    cerr << "Couldn't run '" << fn_call << "'" << endl;
+    PyErr_Print();
+    exit(EXIT_FAILURE);
+  }
+
+  char *cstr;
+  PyArg_Parse(pstr, "s", &cstr);
+  auto value = string(cstr);
+  assert(!value.compare("Hello, world"));
+  Py_DECREF(pstr);
+}
+
 int main(int argc, char *argv[]) {
-  auto tmp = filesystem::temp_directory_path();
-  auto filename = filesystem::path(tmp).append("python-std.zip");
-  ofstream b_stream(filename, fstream::out | fstream::binary);
-  if (!b_stream) {
-    cerr << "Couldn't create " << filename << endl;
-    return EXIT_FAILURE;
-  }
-
-  b_stream.write(reinterpret_cast<char*>(&_binary_target_python_std_zip_start),
-                 reinterpret_cast<size_t>(&_binary_target_python_std_zip_size));
-  if (!b_stream.good()) {
-    cerr << "Couldn't write " << filename << endl;
-    return EXIT_FAILURE;
-  }
-
-  stringstream ss;
-  ss << "unzip -o -q " << filename << " -d " << tmp;
-  system(ss.str().c_str());
-
+  setup_py_std();
   shared_ptr<wchar_t> program(Py_DecodeLocale(argv[0], nullptr),
                               [](wchar_t* p) {
                                 PyMem_RawFree(p);
@@ -62,7 +64,13 @@ int main(int argc, char *argv[]) {
   }
   // end::native[]
 
-  setenv("PYTHONPATH", tmp.c_str(), 1);
+  // tag::cython[]
+  if (PyImport_AppendInittab("cython_main", PyInit_cython_main) == -1) {
+    cerr << "Error: could not extend in-built modules table" << endl;
+    return EXIT_FAILURE;
+  }
+  // end::cython[]
+
   Py_SetProgramName(program.get());
   shared_ptr<void> py([]() {
     Py_Initialize();
@@ -72,29 +80,14 @@ int main(int argc, char *argv[]) {
   });
 
   auto src = "import usermod; fn = lambda: 'Hello, ' + usermod.read()";
-  if (PyRun_SimpleString(src)) {
-    cerr << "Could define `fn`" << endl;
-    return EXIT_FAILURE;
-  }
+  verify(src, "fn()");
 
-  PyObject* main = PyImport_AddModule("__main__");
-  PyObject* globals = PyModule_GetDict(main);
-  PyObject* locals = PyDict_New();
-  PyObject *pstr  = PyRun_String("fn()", Py_eval_input, globals, locals);
-  if (!pstr) {
-    cerr << "Couldn't run 'fn':" << endl;
-    PyErr_Print();
-    return EXIT_FAILURE;
-  }
-
-  char *cstr;
-  PyArg_Parse(pstr, "s", &cstr);
-  auto value = string(cstr);
-  assert(!value.compare("Hello, world"));
-  Py_DECREF(pstr);
+  auto cython_src =
+    "import cython_main; fn = lambda: 'Hello, ' + cython_main.cy_read()";
+  verify(cython_src, "fn()");
 
   cout << "| Python" << endl;
-  cout << "| " << filesystem::file_size(argv[0]) / 1024 << endl;
+  cout << "| " << read_size(argv[0]) << endl;
   cout << "| " << rss << endl;
   cout << "| `" << src << "`" << endl;
 
