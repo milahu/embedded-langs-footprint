@@ -32,6 +32,16 @@ int main(int argc, char *argv[]) {
   ss << "unzip -o -q " << filename << " -d " << tmp;
   system(ss.str().c_str());
 
+  shared_ptr<wchar_t> program(Py_DecodeLocale(argv[0], nullptr),
+                              [](wchar_t* p) {
+                                PyMem_RawFree(p);
+                              });
+  if (!program) {
+    cerr << "Fatal error: cannot decode argv[0], got " <<
+      argc << " arguments" << endl;
+    return EXIT_FAILURE;
+  }
+
   static size_t rss;
   // tag::native[]
   PyMethodDef user_methods[] = {
@@ -53,7 +63,13 @@ int main(int argc, char *argv[]) {
   // end::native[]
 
   setenv("PYTHONPATH", tmp.c_str(), 1);
-  Py_Initialize();
+  Py_SetProgramName(program.get());
+  shared_ptr<void> py([]() {
+    Py_Initialize();
+    return nullptr;
+  }(), [](void*) {
+    Py_Finalize();
+  });
 
   auto src = "import usermod; fn = lambda: 'Hello, ' + usermod.read()";
   if (PyRun_SimpleString(src)) {
@@ -81,10 +97,6 @@ int main(int argc, char *argv[]) {
   cout << "| " << filesystem::file_size(argv[0]) / 1024 << endl;
   cout << "| " << rss << endl;
   cout << "| `" << src << "`" << endl;
-
-  if (Py_FinalizeEx() < 0) {
-    return EXIT_FAILURE;
-  }
 
   return EXIT_SUCCESS;
 }
