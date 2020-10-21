@@ -192,9 +192,11 @@ python-std-elf := target/python-std.o
 $(python-std-elf): $(python-std)
 	$(LD) -r -b binary -o $@ $^
 
+# tag::cython[]
 cython-main := target/cython_main.c
 $(cython-main): src/cython_main.pyx
 	cython -3 $^ -o $@
+# end::cython[]
 
 target/python: src/python.cc src/proc.cc $(cython-main) $(python-lib) $(python-std-elf)
 	$(CXX) $(CXXFLAGS) $^ -o $@ \

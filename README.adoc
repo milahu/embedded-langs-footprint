@@ -1,5 +1,6 @@
 = Embedded Languages Footprint
 :toc:
+:toclevels: 3
 :source-highlighter: rouge
 :icons: font
 
@@ -274,19 +275,29 @@ Notes:
 
 ==== Using Cython
 
-Using Cython simplifies the embedding as declarations are in Cython files
-(with all Python features available) and C/C++ side requires only registering the module.
-Please note that we don't use `--embed` feature (that generates `main`) as we need
-to extract Python libraries first. Cython's `main` requires Python modules already available,
-so the special environments require custom `main`.
+https://cython.org/[Cython] is an optimising static compiler for both the Python programming language and the extended Cython programming language (based on Pyrex). It makes writing C extensions for Python as easy as Python itself.
 
-.Declare external functions in `.pyx`-files:
+It requires few more steps to use comparing with vanilla C/C++ usage, however the productivy gain outweights the build process changes. Please note that we don't use `--embed` feature (that generates `main`) as we need
+to extract Python libraries first. Currently Cython doesn't support customization of `main()`, and it assumes that Python modules already available (not in our case). However, in general, Cython's `main` is not used much, as host environment usually have additional
+functionality besides calling Python code.
+
+The examples of the steps involved in using Cython are described below.
+
+.Step 1. Write Cython code in `.pyx`-files:
 [source,cython,indent=0]
 ----
 include::src/cython_main.pyx[tag=declaration]
 ----
 
-.Register Cython module
+.Step 2. Compile Cython code into `.c`/`.h`-files:
+[source,makefile,indent=0]
+----
+include::Makefile[tag=cython]
+----
+
+Please note that the name of the `.pyx`-file is used for exporting `PyInit`-function (`PyInit_cython_main` below).
+
+.Step3. Register Cython modules in Python embedding code
 [source,cpp,indent=0]
 ----
 include::src/python.cc[tag=cython]
