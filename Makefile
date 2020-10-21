@@ -6,6 +6,7 @@ CXXFLAGS := -Os -s -std=c++17
 
 executables := \
 	target/tinyscheme \
+	target/micropython \
 	target/lua \
 	target/chibi-scheme \
 	target/squirrel \
@@ -199,6 +200,26 @@ target/python: src/python.cc src/proc.cc $(cython-main) $(python-lib) $(python-s
 	$(CXX) $(CXXFLAGS) $^ -o $@ \
 		-I$(python-code) -I$(python-code)/Include -Isrc -Itarget \
 		-ldl -pthread -lutil -fPIC
+
+micropython-code := target/micropython-code
+$(micropython-code): | target
+	$(GIT_CLONE) "https://github.com/micropython/micropython.git" $@
+
+micropython-lib := $(micropython-code)/ports/unix/libmicropython.a
+$(micropython-lib): $(micropython-code)
+	$(MAKE) -C $(micropython-code)/mpy-cross -j
+	$(MAKE) -C $(micropython-code)/ports/unix -j submodules
+	$(MAKE) VARIANT=minimal -C $(micropython-code)/ports/unix -j lib
+	$(RM) $(micropython-lib)
+	objcopy -L main -L mp_import_stat -L nlr_jump_fail $(micropython-code)/ports/unix/build-minimal/main.o
+	$(MAKE) VARIANT=minimal -C $(micropython-code)/ports/unix lib
+
+target/micropython: src/micropython.cc src/proc.cc $(micropython-lib)
+	$(CXX) $(CXXFLAGS) $^ -o $@ \
+		-I$(micropython-code) -I$(micropython-code)/ports/unix \
+		-I$(micropython-code)/ports/unix/variants/minimal \
+		-I$(micropython-code)/ports/unix/build-minimal \
+		-ldl -lffi -pthread
 
 target:
 	mkdir -p target

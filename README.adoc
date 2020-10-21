@@ -274,8 +274,11 @@ Notes:
 
 ==== Using Cython
 
-Using Cython simplifies the embedding as the declaration is in Cython file
-(with all Python features available) and C/C++ side require only registering the module.
+Using Cython simplifies the embedding as declarations are in Cython files
+(with all Python features available) and C/C++ side requires only registering the module.
+Please note that we don't use `--embed` feature (that generates `main`) as we need
+to extract Python libraries first. Cython's `main` requires Python modules already available,
+so the special environments require custom `main`.
 
 .Declare external functions in `.pyx`-files:
 [source,cython,indent=0]
@@ -288,3 +291,23 @@ include::src/cython_main.pyx[tag=declaration]
 ----
 include::src/python.cc[tag=cython]
 ----
+
+=== MicroPython
+
+MicroPython is a lean and efficient implementation of the Python 3 programming language that includes a small subset of the Python standard library and is optimised to run on microcontrollers and in constrained environments. 
+
+Homepage:: https://micropython.org/
+Documentation:: https://docs.micropython.org/
+Source code:: https://github.com/micropython/micropython
+
+.External Function Declaration (for testing purposes only)
+[source,cpp,indent=0]
+----
+include::src/micropython.cc[tag=native]
+----
+
+Notes:
+
+ - MicroPython is not so friendly to the embedding, for example, it has the proper `lib` rule in the Makefile, but the generated library has `main` symbol that we had to localize using `objcopy`;
+ - Not all macros work in C++, it's recommended to use pure C;
+ - Generation of QSTR and external module definitions have to occur during MicroPython compilation, thus we had to take shortcuts for the test app.

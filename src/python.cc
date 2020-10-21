@@ -1,6 +1,8 @@
 #include "proc.hh"
+#include <filesystem>
 #include <iostream>
 #include <memory>
+#include <fstream>
 
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
@@ -8,6 +10,31 @@
 #include "cython_main.h"
 
 using namespace std;
+
+extern unsigned char _binary_target_python_std_zip_start;
+extern unsigned char _binary_target_python_std_zip_size;
+
+void setup_py_std() {
+  auto tmp = filesystem::temp_directory_path();
+  auto filename = filesystem::path(tmp).append("python-std.zip");
+  ofstream b_stream(filename, fstream::out | fstream::binary);
+  if (!b_stream) {
+    cerr << "Couldn't create " << filename << endl;
+    exit(EXIT_FAILURE);
+  }
+
+  b_stream.write(reinterpret_cast<char*>(&_binary_target_python_std_zip_start),
+                 reinterpret_cast<size_t>(&_binary_target_python_std_zip_size));
+  if (!b_stream.good()) {
+    cerr << "Couldn't write " << filename << endl;
+    exit(EXIT_FAILURE);
+  }
+
+  stringstream ss;
+  ss << "unzip -o -q " << filename << " -d " << tmp;
+  system(ss.str().c_str());
+  setenv("PYTHONPATH", tmp.c_str(), 1);
+}
 
 void verify(const char *src, const char *fn_call) {
   if (PyRun_SimpleString(src)) {
