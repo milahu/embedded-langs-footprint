@@ -6,6 +6,7 @@ CXXFLAGS := -Os -s -std=c++17
 
 executables := \
 	target/tinyscheme \
+	target/wasm3 \
 	target/micropython \
 	target/lua \
 	target/chibi-scheme \
@@ -194,11 +195,11 @@ $(python-std-elf): $(python-std)
 
 # tag::cython[]
 cython-main := target/cython_main.c
-$(cython-main): src/cython_main.pyx
+$(cython-main): src/python/cython_main.pyx
 	cython -3 $^ -o $@
 # end::cython[]
 
-target/python: src/python.cc src/proc.cc $(cython-main) $(python-lib) $(python-std-elf)
+target/python: src/python/main.cc src/proc.cc $(cython-main) $(python-lib) $(python-std-elf)
 	$(CXX) $(CXXFLAGS) $^ -o $@ \
 		-I$(python-code) -I$(python-code)/Include -Isrc -Itarget \
 		-ldl -pthread -lutil -fPIC
@@ -222,6 +223,32 @@ target/micropython: src/micropython.cc src/proc.cc $(micropython-lib)
 		-I$(micropython-code)/ports/unix/variants/minimal \
 		-I$(micropython-code)/ports/unix/build-minimal \
 		-ldl -lffi -pthread
+
+wasm3-code := target/wasm3-code
+$(wasm3-code): | target
+	$(GIT_CLONE) "https://github.com/wasm3/wasm3.git" $@
+
+wasm3-lib := $(wasm3-code)/build/source/libm3.a
+$(wasm3-lib): | $(wasm3-code)
+	mkdir -p $(wasm3-code)/build && \
+	cd $(wasm3-code)/build && \
+	cmake .. && \
+	make -j m3
+
+wasm3 := target/wasm3
+$(wasm3): src/wasm3/main.cc src/proc.cc $(wasm3-lib)
+	$(CXX) $(CXXFLAGS) $^ -o $@ \
+		-Isrc \
+		-I$(wasm3-code)/source \
+		-I$(wasm3-code)/platforms/cpp/wasm3_cpp/include
+
+fn.wasm := target/fn.wasm
+$(fn.wasm): src/wasm3/fn.rs
+	rustc --crate-type cdylib --target wasm32-unknown-unknown $^ -o $@
+
+.PHONY: run[wasm]
+run[wasm]: $(wasm3) $(fn.wasm)
+	$^
 
 target:
 	mkdir -p target

@@ -48,6 +48,16 @@ Platform:: Linux amber 5.9.1-arch1-1 #1 SMP PREEMPT Sat, 17 Oct 2020 13:30:37 +0
 include::results.adoc[]
 |===
 
+^[1]^ Wasm3 runs WebAssembly, therefore there is no reason to show the exact input
+as it would be the binary content.
+However, please see below the source code example that's compiled into that binary.
+
+.Rust source code (it uses wrappers to operate strings)
+[source,rust,indent=0]
+----
+include::src/wasm3/fn.rs[tag=src]
+----
+
 == Languages
 
 Each language contains the section how to declare external function used
@@ -264,7 +274,7 @@ Source code:: https://github.com/python/cpython
 .External Function Declaration (C/C++)
 [source,cpp,indent=0]
 ----
-include::src/python.cc[tag=native]
+include::src/python/main.cc[tag=native]
 ----
 
 Notes:
@@ -286,7 +296,7 @@ The examples of the steps involved in using Cython are described below.
 .Step 1. Write Cython code in `.pyx`-files:
 [source,cython,indent=0]
 ----
-include::src/cython_main.pyx[tag=declaration]
+include::src/python/cython_main.pyx[tag=declaration]
 ----
 
 .Step 2. Compile Cython code into `.c`/`.h`-files:
@@ -300,7 +310,7 @@ Please note that the name of the `.pyx`-file is used for exporting `PyInit`-func
 .Step3. Register Cython modules in Python embedding code
 [source,cpp,indent=0]
 ----
-include::src/python.cc[tag=cython]
+include::src/python/main.cc[tag=cython]
 ----
 
 === MicroPython
@@ -322,3 +332,29 @@ Notes:
  - MicroPython is not so friendly to the embedding, for example, it has the proper `lib` rule in the Makefile, but the generated library has `main` symbol that we had to localize using `objcopy`;
  - Not all macros work in C++, it's recommended to use pure C;
  - Generation of QSTR and external module definitions have to occur during MicroPython compilation, thus we had to take shortcuts for the test app.
+
+=== Wasm3
+
+A high performance WebAssembly interpreter written in C.
+
+Homepage:: https://github.com/wasm3/wasm3
+
+Current C++ headers do not allow to use lambdas directly, therefore the external functions
+should be declared and registered separately.
+
+.External Function Declaration
+[source,cpp,indent=0]
+----
+include::src/wasm3/main.cc[tag=declare]
+----
+
+.External Function Registration
+[source,cpp,indent=0]
+----
+include::src/wasm3/main.cc[tag=register]
+----
+
+Notes:
+
+ - WASM doesn't support strings natively, thus we've added the simple memory manager exposing API
+ to allocate, modify, create and dump strings.
