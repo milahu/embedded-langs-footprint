@@ -52,7 +52,7 @@ include::results.adoc[]
 as it would be the binary content.
 However, please see below the source code example that's compiled into that binary.
 
-.Rust source code (it uses wrappers to operate strings)
+.Rust source code (it uses `_m3`-wrappers to exchange blobs with host)
 [source,rust,indent=0]
 ----
 include::src/wasm3/fn.rs[tag=src]
@@ -357,4 +357,5 @@ include::src/wasm3/main.cc[tag=register]
 Notes:
 
  - WASM doesn't support strings natively, thus we've added the simple memory manager exposing API
- to allocate, modify, create and dump strings.
+ to exchange the blobs with the host;
+ - WASI is supported, but it adds just minor advantages for the project, therefore it wasn't used.

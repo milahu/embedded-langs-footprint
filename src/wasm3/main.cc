@@ -12,23 +12,26 @@ class {
 
 public:
 
-  int new_block() {
+  int block_new() {
     auto id = this->blocks.size();
     blocks[id] = make_shared<vector<int>>();
     return id;
   }
 
-  int append_to_block(int id, int v) {
+  int block_pushback(int id, int v) {
     auto ptr = blocks[id];
     ptr->push_back(v);
     return id;
   }
 
-  int join_block(int dest, int src) {
-    auto ptr_dest = blocks[dest];
-    auto ptr_src = blocks[src];
-    ptr_dest->insert(ptr_dest->end(), ptr_src->begin(), ptr_src->end());
-    return dest;
+  int block_size(int id) {
+    auto ptr = blocks[id];
+    return ptr->size();
+  }
+
+  int block_read(int id, int idx) {
+    auto ptr = blocks[id];
+    return ptr->at(idx);
   }
 
   string as_str(int id) {
@@ -37,7 +40,7 @@ public:
   }
 
   int from_str(const string& str) {
-    auto id = this->new_block();
+    auto id = this->block_new();
     auto ptr = blocks[id];
     ptr->assign(str.begin(), str.end());
     return id;
@@ -45,16 +48,20 @@ public:
 
 } mem;
 
-int new_block() {
-  return mem.new_block();
+int block_new() {
+  return mem.block_new();
 }
 
-int append_to_block(int id, int v) {
-  return mem.append_to_block(id, v);
+int block_pushback(int id, int v) {
+  return mem.block_pushback(id, v);
 }
 
-int join_block(int dest, int src) {
-  return mem.join_block(dest, src);
+int block_size(int id) {
+  return mem.block_size(id);
+}
+
+int block_read(int id, int idx) {
+  return mem.block_read(id, idx);
 }
 
 static int rss;
@@ -69,7 +76,7 @@ int read() {
 int main(int argc, char* argv[]) {
     try {
         wasm3::environment env;
-        auto runtime = env.new_runtime(1024);
+        auto runtime = env.new_runtime(2048);
         string fn("target/fn.wasm");
         if (argc > 1) {
           fn = argv[1];
@@ -91,9 +98,10 @@ int main(int argc, char* argv[]) {
         auto mod = env.parse_module(buffer.data(), buffer.size());
         runtime.load(mod);
 
-        mod.link<new_block>("*", "new_block");
-        mod.link<append_to_block>("*", "append_to_block");
-        mod.link<join_block>("*", "join");
+        mod.link<block_new>("*", "block_new");
+        mod.link<block_pushback>("*", "block_pushback");
+        mod.link<block_size>("*", "block_size");
+        mod.link<block_read>("*", "block_read");
         // tag::register[]
         mod.link<read>("*", "read");
         // end::register[]
