@@ -94,7 +94,7 @@ gravity-code := target/gravity-code
 $(gravity-code): | target
 	$(GIT_CLONE) "https://github.com/marcobambini/gravity" $@
 
-gravity-lib := $(gravity-code)/libgravityapi_s.a
+gravity-lib := $(gravity-code)/lib/libgravityapi_s.a
 $(gravity-lib): $(gravity-code)
 	cd $(gravity-code) && \
 	cmake . && \
@@ -255,4 +255,4 @@ target:
 
 .PHONY: clean
 clean:
-	$(RM) target
+	$(RM) -r target
