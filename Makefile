@@ -16,7 +16,8 @@ executables := \
 	target/janet \
 	target/chaiscript \
 	target/angelscript \
-	target/python
+	target/python \
+	target/dascript
 
 results := results.adoc
 
@@ -233,7 +234,7 @@ $(wasm3-lib): | $(wasm3-code)
 	mkdir -p $(wasm3-code)/build && \
 	cd $(wasm3-code)/build && \
 	cmake .. && \
-	make -j m3
+	$(MAKE) -j m3
 
 wasm3 := target/wasm3
 $(wasm3): src/wasm3/main.cc src/proc.cc $(wasm3-lib)
@@ -249,6 +250,21 @@ $(fn.wasm): src/wasm3/fn.rs
 .PHONY: run[wasm]
 run[wasm]: $(wasm3) $(fn.wasm)
 	$^
+
+dascript-code := target/dascript-code
+$(dascript-code): | target
+	$(GIT_CLONE) "https://github.com/GaijinEntertainment/daScript.git" $@
+
+dascript-lib := $(dascript-code)/build/liblibDaScript.a
+$(dascript-lib): $(dascript-code)
+	mkdir -p $(dascript-code)/build && \
+	cd $(dascript-code)/build && \
+	cmake -DCMAKE_OSX_ARCHITECTURES="x86_64" -DCMAKE_BUILD_TYPE=MINSIZEREL -G "Unix Makefiles" .. && \
+	$(MAKE) -j libDaScript
+
+target/dascript: src/dascript.cc src/proc.cc $(dascript-lib)
+	$(CXX) $(CXXFLAGS) $^ -o $@ \
+		-I$(dascript-code)/include -fno-rtti
 
 target:
 	mkdir -p target

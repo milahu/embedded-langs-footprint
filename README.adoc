@@ -359,3 +359,23 @@ Notes:
  - WASM doesn't support strings natively, thus we've added the simple memory manager exposing API
  to exchange the blobs with the host;
  - WASI is supported, but it adds just minor advantages for the project, therefore it wasn't used.
+
+=== daScript
+
+daScript is high-level, statically strong typed scripting language, designed to be fast as embeddable ‘scripting’ language for C++ performance critical applications like games. 
+
+Homepage:: https://dascript.org/
+Documentation:: https://dascript.org/doc/index.html
+Source code:: https://github.com/GaijinEntertainment/daScript
+
+.External Function Declaration
+[source,cpp,indent=0]
+----
+include::src/dascript.cc[tag=native]
+----
+
+Notes:
+
+ - Two-style formatting (curly brackets or Python-style indenting).
+ - Quite fast (and even faster with Ahead-of-Time compilation).
+ - Extensive standard library (e.g. supports networking and JSON manipulation).
