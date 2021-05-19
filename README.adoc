@@ -41,7 +41,7 @@ of the external function ("read" that should return "world").
 All code is verified to be properly returing "Hello, world"
 as the result of invoking that function. Resident set size (RSS) is measured during execution of "read" function.
 
-Platform:: Linux amber 5.11.2-arch1-1 #1 SMP PREEMPT Fri, 26 Feb 2021 18:26:41 +0000 x86_64 GNU/Linux
+Platform:: Linux amber 5.11.16-arch1-1 #1 SMP PREEMPT Wed, 21 Apr 2021 17:22:13 +0000 x86_64 GNU/Linux
 
 |===
 | Language | ELF Size (KiB) | RSS (KiB) | Example Code
