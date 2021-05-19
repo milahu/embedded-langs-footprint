@@ -76,12 +76,12 @@ int read() {
 int main(int argc, char* argv[]) {
     try {
         wasm3::environment env;
-        auto runtime = env.new_runtime(2048);
+        auto runtime = env.new_runtime(4096);
         string fn("target/fn.wasm");
         if (argc > 1) {
           fn = argv[1];
         }
-        ifstream file(fn, std::ios::binary);
+        ifstream file(fn, std::ios::binary | std::ios::in);
 
         // it's the critical operation here: it turns off whitespace
         // skipping on formatted input streams even in binary mode.
@@ -98,12 +98,12 @@ int main(int argc, char* argv[]) {
         auto mod = env.parse_module(buffer.data(), buffer.size());
         runtime.load(mod);
 
-        mod.link<block_new>("*", "block_new");
-        mod.link<block_pushback>("*", "block_pushback");
-        mod.link<block_size>("*", "block_size");
-        mod.link<block_read>("*", "block_read");
+        mod.link("*", "block_new", block_new);
+        mod.link("*", "block_pushback", block_pushback);
+        mod.link("*", "block_size", block_size);
+        mod.link("*", "block_read", block_read);
         // tag::register[]
-        mod.link<read>("*", "read");
+        mod.link("*", "read", read);
         // end::register[]
 
         {

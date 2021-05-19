@@ -1,61 +1,65 @@
 
 | TinyScheme
 | 84
-| 3228
+| 3308
 | `(define fn(lambda () (string-append "Hello, " (read))))`
-
 
 | MicroPython
 | 186
-| 1920
+| 1892
 | `import builtins; fn = lambda: 'Hello, ' + builtins.read()`
 
 | Lua
-| 259
-| 1776
+| 255
+| 1800
 | `function fn() return "Hello, " .. read() end`
 
 | Chibi-Scheme
 | 259
-| 3512
+| 3680
 | `(define fn(lambda () (string-append "Hello, " (read))))`
 
 | Squirrel
-| 270
-| 1752
+| 282
+| 1900
 | `function fn() { return "Hello, " + read(); }`
 
 | ArkScript
 | 443
-| 1780
+| 1924
 | `(let fn(fun() (+ "Hello, " (read))))`
 
 | Gravity
-| 516
-| 3736
+| 520
+| 3816
 | `extern var read; func fn() { return "Hello, " + read(); }`
 
 | Janet
-| 585
-| 4140
+| 569
+| 4400
 | `(defn fn[] (string "Hello, " (read)))`
+
+| Wasm3
+| 854
+| 6132
+| N/A ^[1]^
 
 | ChaiScript
 | 1346
-| 4824
+| 5200
 | `def fn() { return "Hello, " + read(); }`
 
 | AngelScript
-| 1882
-| 4908
+| 1894
+| 4860
 | `string fn() { return 'Hello, ' + read(); }`
 
 | Python
-| 3671
-| 11700
+| 3661
+| 9608
 | `import usermod; fn = lambda: 'Hello, ' + usermod.read()`
 
 | daScript
-| 11181
-| 17412
+| 11277
+| 17852
 | `require usermod;[export] def fn { return "Hello, " + read(); }`

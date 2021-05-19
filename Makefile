@@ -1,12 +1,11 @@
 SVN := svn co -q
 GIT_CLONE := git clone -q --depth 1
-CXXFLAGS := -Os -s -std=c++17
+#CXXFLAGS := -Os -s -std=c++17
 # For debugging:
-# CXXFLAGS := -O0 -g -std=c++17
+CXXFLAGS := -O0 -g -std=c++17
 
 executables := \
 	target/tinyscheme \
-	target/wasm3 \
 	target/micropython \
 	target/lua \
 	target/chibi-scheme \
@@ -14,6 +13,7 @@ executables := \
 	target/arkscript \
 	target/gravity \
 	target/janet \
+	target/wasm3 \
 	target/chaiscript \
 	target/angelscript \
 	target/python \
@@ -160,8 +160,10 @@ target/lua: src/lua.cc src/proc.cc $(lua-lib)
 		-I$(lua-code) -ldl
 
 python-code := target/python-code
+# Hardcode the version until Cython catches up
 $(python-code): | target
-	$(GIT_CLONE) "https://github.com/python/cpython.git" $@
+	$(GIT_CLONE) "https://github.com/python/cpython.git" $@ \
+	&& cd $@ && git fetch --tags &&  git checkout tags/v3.9.5
 
 python-lib := $(python-code)/libpython.a
 $(python-lib): | $(python-code)
@@ -184,7 +186,8 @@ site.py \
 stat.py \
 encodings/aliases.py \
 encodings/__init__.py \
-encodings/utf_8.py
+encodings/utf_8.py \
+encodings/latin_1.py
 
 $(python-std): | $(python-code)
 	cd $(python-code)/Lib && \
